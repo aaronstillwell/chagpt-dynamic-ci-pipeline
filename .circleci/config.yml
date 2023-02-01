@@ -13,6 +13,7 @@ jobs:
       - run: npm install openai
       - run:
           shell: node
+          name: Generate CircleCI config with OpenAI
           command: |
             const Configuration = require('openai').Configuration;
             const OpenAIApi = require('openai').OpenAIApi;
@@ -32,6 +33,8 @@ jobs:
 
               let config = completion.data.choices[0].text;
               
+              console.log(config);
+
               try {
                 fs.writeFileSync('/tmp/config.yml', config);
               } catch (err) {
