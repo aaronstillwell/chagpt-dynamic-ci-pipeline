@@ -10,7 +10,7 @@ jobs:
     docker:
       - image: cimg/node:19.5
     steps:
-      - run: npm install -g openai
+      - run: npm install openai
       - run:
           shell: node
           command: |
