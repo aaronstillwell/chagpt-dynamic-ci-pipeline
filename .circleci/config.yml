@@ -26,7 +26,7 @@ jobs:
             async function generateConfig() {
               const completion = await openai.createCompletion({
                 model: 'text-davinci-003',
-                prompt: 'Create a CircleCI configuration to build a node project',
+                prompt: 'Create a CircleCI configuration',
                 max_tokens: 3750,
               });
 
