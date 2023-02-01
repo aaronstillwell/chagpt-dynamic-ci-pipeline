@@ -1,0 +1,50 @@
+version: 2.1
+
+setup: true
+
+orbs:
+  continue: circleci/continuation@0.3.1
+
+jobs:
+  chatgpt:
+    docker:
+      - image: cimg/node:19.5
+    steps:
+      - run: npm install -g openai
+      - run:
+          shell: node
+          command: |
+            const Configuration = require('openai').Configuration;
+            const OpenAIApi = require('openai').OpenAIApi;
+            const fs = require('fs');
+
+            const configuration = new Configuration({
+              apiKey: process.env.OPENAI_API_KEY
+            });
+
+            const openai = new OpenAIApi(configuration);
+            async function generateConfig() {
+              const completion = await openai.createCompletion({
+                model: 'text-davinci-003',
+                prompt: 'Create a CircleCI configuration to build a node project',
+                max_tokens: 3750,
+              });
+
+              let config = completion.data.choices[0].text;
+              
+              try {
+                fs.writeFileSync('/tmp/config.yml', config);
+              } catch (err) {
+                console.error(err);
+              }
+            }
+            generateConfig();
+      - continue/continue:
+          configuration_path: /tmp/config.yml
+
+workflows:
+  chatgpt-generate-config:
+    jobs:
+      - chatgpt:
+          context:
+            - openai
